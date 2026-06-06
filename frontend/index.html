@@ -1,0 +1,63 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechFlow AI Chatbot - Powered by Ollama</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="chatbot-header">
+            <div class="header-content">
+                <h1>🤖 TechFlow Electronics Support</h1>
+                <p class="subtitle">AI-Powered with Ollama (Mistral/Llama2)</p>
+            </div>
+            <div class="header-controls">
+                <select id="modelSelect" class="model-select">
+                    <option value="mistral">🚀 Mistral (Fast)</option>
+                    <option value="llama2">🦙 Llama2 (Accurate)</option>
+                    <option value="neural-chat">💭 Neural-Chat</option>
+                </select>
+                <button id="clearBtn" class="clear-btn" title="Clear chat history">
+                    <span>Clear Chat</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="ai-mode-toggle">
+            <label>
+                <input type="checkbox" id="aiModeToggle" checked>
+                <span>AI Mode: <strong id="aiModeStatus">Auto</strong></span>
+            </label>
+            <small>Toggle between FAQ database and AI generation</small>
+        </div>
+
+        <div class="chat-container">
+            <div id="chatBox" class="chat-box">
+                <!-- Messages will be added here -->
+            </div>
+        </div>
+
+        <div class="input-container">
+            <input 
+                type="text" 
+                id="userInput" 
+                class="input-field" 
+                placeholder="Ask about our products, shipping, returns... (Press Enter)"
+                autocomplete="off"
+            >
+            <button id="sendBtn" class="send-btn" title="Send message (or press Enter)">
+                <span>Send</span>
+            </button>
+        </div>
+
+        <div class="footer">
+            <p>💡 TechFlow Electronics | Fast shipping | Quality products | Expert support</p>
+            <p style="font-size: 11px; margin-top: 5px;">Powered by Ollama AI • Pattern matching + Intelligent responses</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

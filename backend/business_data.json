@@ -1,0 +1,166 @@
+{
+  "business_info": {
+    "name": "TechFlow Electronics",
+    "tagline": "Your Premier Technology Retail Partner",
+    "founded": "2018",
+    "description": "TechFlow Electronics is a leading online retailer specializing in premium electronics, laptops, smartphones, and accessories. We pride ourselves on fast shipping, quality products, and exceptional customer service.",
+    "headquarters": "San Francisco, CA",
+    "website": "www.techflowelectronics.com",
+    "phone": "1-800-TECHFLOW (1-800-832-4356)",
+    "email": "support@techflowelectronics.com",
+    "hours": "Monday-Sunday: 8AM-11PM EST"
+  },
+  "products": {
+    "laptops": {
+      "category": "Laptops & Computers",
+      "description": "High-performance laptops for professionals and gamers",
+      "popular_items": [
+        {
+          "name": "ProBook 15X Ultra",
+          "price": "$1,299",
+          "specs": "Intel i7, 16GB RAM, 512GB SSD, RTX 4070",
+          "warranty": "2 years"
+        },
+        {
+          "name": "UltraBook Air M2",
+          "price": "$899",
+          "specs": "Apple M2, 8GB RAM, 256GB SSD",
+          "warranty": "1 year"
+        }
+      ]
+    },
+    "smartphones": {
+      "category": "Smartphones & Tablets",
+      "description": "Latest flagship phones and tablets",
+      "popular_items": [
+        {
+          "name": "TechFlow Pro Max",
+          "price": "$999",
+          "specs": "6.7 inch Display, 512GB Storage, 5G",
+          "warranty": "1 year"
+        },
+        {
+          "name": "Tab Elite 12",
+          "price": "$599",
+          "specs": "12 inch Display, 128GB Storage, Stylus Included",
+          "warranty": "1 year"
+        }
+      ]
+    },
+    "accessories": {
+      "category": "Accessories",
+      "description": "Chargers, cases, headphones, and more",
+      "popular_items": [
+        {
+          "name": "USB-C Fast Charger 65W",
+          "price": "$49",
+          "specs": "Fast charging for all devices"
+        },
+        {
+          "name": "Premium Wireless Headphones",
+          "price": "$199",
+          "specs": "Noise cancellation, 30-hour battery"
+        }
+      ]
+    }
+  },
+  "policies": {
+    "shipping": {
+      "standard": {
+        "time": "5-7 business days",
+        "cost": "Free on orders over $100",
+        "other_cost": "$9.99"
+      },
+      "express": {
+        "time": "2-3 business days",
+        "cost": "$24.99"
+      },
+      "overnight": {
+        "time": "Next business day",
+        "cost": "$49.99"
+      },
+      "international": {
+        "countries": "Over 150 countries",
+        "time": "10-21 business days",
+        "customs": "Customer responsible for customs"
+      }
+    },
+    "returns": {
+      "window": "30 days",
+      "condition": "Item must be unused and in original packaging",
+      "shipping": "Free return shipping",
+      "refund_time": "5-7 business days after receipt"
+    },
+    "warranty": {
+      "standard": "1-2 years manufacturer warranty",
+      "extended": "Up to 5 years available",
+      "coverage": "Manufacturing defects, accidental damage (extended only)",
+      "exclusions": "Water damage from misuse not covered"
+    },
+    "payment": {
+      "accepted": ["Credit Card (Visa, Mastercard, Amex)", "Debit Card", "PayPal", "Apple Pay", "Google Pay"],
+      "installments": "0% APR financing available on orders over $500 (12 months)",
+      "security": "PCI-DSS compliant, 256-bit SSL encryption"
+    }
+  },
+  "faq_common": {
+    "faqs": [
+      {
+        "question": "What are your shipping options?",
+        "answer": "We offer Standard (5-7 days, FREE over $100), Express (2-3 days, $24.99), Overnight ($49.99), and International (10-21 days). Choose during checkout!"
+      },
+      {
+        "question": "How do I return an item?",
+        "answer": "You have 30 days to return unused items in original packaging. Initiate a return in your account, and we'll email a prepaid shipping label. Refunds process 5-7 days after we receive it."
+      },
+      {
+        "question": "Do you offer warranties?",
+        "answer": "Yes! All products come with 1-2 year manufacturer warranty. We also offer extended warranties up to 5 years for additional coverage."
+      },
+      {
+        "question": "Can I track my order?",
+        "answer": "Absolutely! You will receive a tracking number via email after shipment. You can also track it in your TechFlow account anytime."
+      },
+      {
+        "question": "Where is my order?",
+        "answer": "You can track your order in real-time using the tracking number we emailed you after shipment. Log into your account or click the tracking link in your email."
+      },
+      {
+        "question": "What payment methods do you accept?",
+        "answer": "We accept Visa, Mastercard, Amex, Debit, PayPal, Apple Pay, and Google Pay. We also offer 0% APR financing on orders over $500."
+      },
+      {
+        "question": "Is my payment information secure?",
+        "answer": "100% secure! We use 256-bit SSL encryption and are PCI-DSS compliant. Your data is never stored on our servers."
+      },
+      {
+        "question": "How do I create an account?",
+        "answer": "Visit our website and click Sign Up. Provide your email, password, and basic info. You will get instant access to order history and exclusive deals!"
+      },
+      {
+        "question": "Do you have a loyalty program?",
+        "answer": "Yes! Our TechFlow Rewards program gives you points on every purchase. Earn 1 point per dollar spent, redeemable for discounts!"
+      },
+      {
+        "question": "What if a product arrives damaged?",
+        "answer": "Contact us immediately with photos. We will replace it or refund 100%. Damaged shipments are rare, but we guarantee satisfaction."
+      }
+    ]
+  },
+  "customer_support": {
+    "phone": "1-800-TECHFLOW (1-800-832-4356)",
+    "email": "support@techflowelectronics.com",
+    "live_chat": "Available 9AM-9PM EST, Monday-Saturday",
+    "social": {
+      "twitter": "@TechFlowCorp",
+      "instagram": "@TechFlowElectronics",
+      "facebook": "facebook.com/TechFlowElectronics"
+    }
+  },
+  "common_issues": {
+    "forgot_password": "Click Forgot Password on login. We will email you a reset link (valid 24 hours). Create a new password and you are back in!",
+    "slow_checkout": "Clear browser cache (Ctrl+Shift+Del) and cookies. Disable ad-blockers temporarily. Or try a different browser.",
+    "out_of_stock": "Subscribe to our notification and we will email when it is back! Usually restocks within 2-4 weeks.",
+    "price_match": "Found a lower price? Email support@techflowelectronics.com within 7 days with proof. We will price match plus give 10% off!"
+  }
+}

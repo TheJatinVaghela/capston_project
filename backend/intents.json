@@ -1,0 +1,227 @@
+{
+  "intents": [
+    {
+      "tag": "greeting",
+      "patterns": [
+        "hello",
+        "hi",
+        "hey",
+        "good morning",
+        "good afternoon",
+        "greetings",
+        "what's up",
+        "howdy"
+      ],
+      "responses": [
+        "Hello! Welcome to our customer service. How can I help you today?",
+        "Hi there! Thanks for reaching out. What can I assist you with?",
+        "Greetings! I'm here to help. What do you need assistance with?"
+      ]
+    },
+    {
+      "tag": "goodbye",
+      "patterns": [
+        "bye",
+        "goodbye",
+        "see you",
+        "farewell",
+        "take care",
+        "see you later",
+        "thanks for helping",
+        "that's all"
+      ],
+      "responses": [
+        "Goodbye! Thank you for using our service. Have a great day!",
+        "See you soon! Feel free to reach out if you need anything else.",
+        "Take care! We appreciate your business."
+      ]
+    },
+    {
+      "tag": "thanks",
+      "patterns": [
+        "thank you",
+        "thanks",
+        "appreciate it",
+        "thanks so much",
+        "thank you so much",
+        "much appreciated",
+        "grateful"
+      ],
+      "responses": [
+        "You're welcome! Is there anything else I can help with?",
+        "Happy to help! Feel free to ask if you need anything else.",
+        "My pleasure! Let me know if you need any other assistance."
+      ]
+    },
+    {
+      "tag": "order_status",
+      "patterns": [
+        "where is my order",
+        "track my order",
+        "order status",
+        "when will i receive",
+        "tracking number",
+        "where is my package",
+        "order tracking",
+        "check order"
+      ],
+      "responses": [
+        "You can track your order using the tracking number sent to your email.",
+        "Visit our website and enter your order number to see real-time tracking.",
+        "Log into your account to check your order status and tracking information."
+      ]
+    },
+    {
+      "tag": "refund",
+      "patterns": [
+        "refund",
+        "i want my money back",
+        "return money",
+        "get refund",
+        "refund status",
+        "when will i get my refund",
+        "money back",
+        "reimbursement"
+      ],
+      "responses": [
+        "Refunds typically process 5-7 business days after we receive your return.",
+        "You can check your refund status in your account under 'Returns & Refunds'.",
+        "Once we receive and inspect your return, we'll issue a refund to your original payment method."
+      ]
+    },
+    {
+      "tag": "payment_issue",
+      "patterns": [
+        "payment failed",
+        "card declined",
+        "payment error",
+        "billing problem",
+        "charge issue",
+        "payment not working",
+        "transaction failed",
+        "payment declined"
+      ],
+      "responses": [
+        "Please check that your card details are correct and try again. Contact your bank if the issue persists.",
+        "Try using a different payment method or contact our support team for assistance.",
+        "This might be a temporary issue. Please wait a few minutes and try again."
+      ]
+    },
+    {
+      "tag": "account_recovery",
+      "patterns": [
+        "forgot password",
+        "reset password",
+        "can't login",
+        "locked out",
+        "account access",
+        "recover account",
+        "reset login",
+        "forgot username"
+      ],
+      "responses": [
+        "Click 'Forgot Password' on the login page to reset your password via email.",
+        "Check your email for a password reset link. If you don't see it, check your spam folder.",
+        "Contact our support team if you need help recovering your account."
+      ]
+    },
+    {
+      "tag": "shipping",
+      "patterns": [
+        "shipping",
+        "delivery",
+        "how long to ship",
+        "shipping cost",
+        "shipping options",
+        "international shipping",
+        "free shipping",
+        "delivery time"
+      ],
+      "responses": [
+        "We offer Standard (5-7 days), Express (2-3 days), and Overnight shipping options.",
+        "Standard shipping is free on orders over $100. Choose your preferred option at checkout.",
+        "Most orders ship within 1-2 business days. International shipping available to 150+ countries."
+      ]
+    },
+    {
+      "tag": "product_info",
+      "patterns": [
+        "product information",
+        "tell me about",
+        "product details",
+        "specifications",
+        "what's the difference",
+        "compare products",
+        "product features",
+        "product specs"
+      ],
+      "responses": [
+        "Visit our product pages for detailed specifications, reviews, and comparisons.",
+        "I can help with product questions! Which product would you like to know about?",
+        "Check the product details for full specifications, pricing, and customer reviews."
+      ]
+    },
+    {
+      "tag": "complaint",
+      "patterns": [
+        "complain",
+        "complaint",
+        "problem",
+        "issue",
+        "not satisfied",
+        "bad experience",
+        "unhappy",
+        "defective",
+        "broken"
+      ],
+      "responses": [
+        "I'm sorry to hear you're having issues. Please contact our support team for immediate assistance.",
+        "We take complaints seriously. Describe the issue and we'll make it right.",
+        "Our team is here to help resolve this. Please provide details so we can assist you."
+      ]
+    },
+    {
+      "tag": "contact_support",
+      "patterns": [
+        "how do i contact support",
+        "speak to someone",
+        "talk to a human",
+        "customer support",
+        "live chat",
+        "phone number",
+        "support email"
+      ],
+      "responses": [
+        "You can reach our support team via email at support@techflowelectronics.com or call 1-800-TECHFLOW.",
+        "We're here to help! Email us at support@techflowelectronics.com or use our live chat.",
+        "Contact support at support@techflowelectronics.com. We typically respond within 24 hours."
+      ]
+    },
+    {
+      "tag": "loyalty_program",
+      "patterns": [
+        "loyalty program",
+        "rewards",
+        "points system",
+        "how do i earn points",
+        "membership benefits",
+        "vip program",
+        "discount code"
+      ],
+      "responses": [
+        "Join our loyalty program and earn points on every purchase! Redeem points for discounts.",
+        "Our rewards program gives you points for every dollar spent. Sign up to start earning!",
+        "We offer a loyalty program with exclusive perks. Register on our website to earn and redeem points."
+      ]
+    },
+    {
+      "tag": "fallback",
+      "patterns": [],
+      "responses": [
+        "I'm not sure I understand. Could you please rephrase that or try asking something else?",
+        "Sorry, I didn't quite catch that. Can you provide more details about what you need?",
+        "I apologize for the confusion. For more detailed assistance, please contact our support team."
+      ]
+    }
+  ]
+}
