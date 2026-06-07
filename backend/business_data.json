@@ -26,6 +26,24 @@
           "price": "$899",
           "specs": "Apple M2, 8GB RAM, 256GB SSD",
           "warranty": "1 year"
+        },
+        {
+          "name": "GameForce RTX 5080",
+          "price": "$1,899",
+          "specs": "AMD Ryzen 9, 32GB RAM, 1TB SSD, RTX 5080",
+          "warranty": "2 years"
+        },
+        {
+          "name": "WorkStation Pro 17",
+          "price": "$1,599",
+          "specs": "Intel i9, 32GB RAM, 1TB SSD, RTX 4060",
+          "warranty": "2 years"
+        },
+        {
+          "name": "SlimBook 14",
+          "price": "$649",
+          "specs": "Intel i5, 8GB RAM, 256GB SSD",
+          "warranty": "1 year"
         }
       ]
     },
@@ -44,6 +62,24 @@
           "price": "$599",
           "specs": "12 inch Display, 128GB Storage, Stylus Included",
           "warranty": "1 year"
+        },
+        {
+          "name": "TechFlow Lite",
+          "price": "$449",
+          "specs": "6.1 inch Display, 128GB Storage, 5G",
+          "warranty": "1 year"
+        },
+        {
+          "name": "Tab Mini 8",
+          "price": "$329",
+          "specs": "8 inch Display, 64GB Storage",
+          "warranty": "1 year"
+        },
+        {
+          "name": "TechFlow Fold",
+          "price": "$1,499",
+          "specs": "Foldable 7.6 inch Display, 256GB Storage, 5G",
+          "warranty": "2 years"
         }
       ]
     },
@@ -60,6 +96,26 @@
           "name": "Premium Wireless Headphones",
           "price": "$199",
           "specs": "Noise cancellation, 30-hour battery"
+        },
+        {
+          "name": "Pro Laptop Sleeve 15",
+          "price": "$39",
+          "specs": "Water-resistant, padded protection"
+        },
+        {
+          "name": "Wireless Mouse Pro",
+          "price": "$59",
+          "specs": "Ergonomic design, Bluetooth 5.0"
+        },
+        {
+          "name": "4K Webcam Ultra",
+          "price": "$129",
+          "specs": "4K resolution, auto-focus, built-in mic"
+        },
+        {
+          "name": "Mechanical Keyboard RGB",
+          "price": "$89",
+          "specs": "Cherry MX switches, RGB backlight"
         }
       ]
     }
@@ -101,6 +157,16 @@
       "accepted": ["Credit Card (Visa, Mastercard, Amex)", "Debit Card", "PayPal", "Apple Pay", "Google Pay"],
       "installments": "0% APR financing available on orders over $500 (12 months)",
       "security": "PCI-DSS compliant, 256-bit SSL encryption"
+    },
+    "cancellation": {
+      "window": "Before shipment only",
+      "process": "Cancel in your account or contact support",
+      "refund_time": "3-5 business days"
+    },
+    "price_match": {
+      "eligible": "Within 7 days of purchase",
+      "requirement": "Same product from authorized retailer",
+      "bonus": "10% additional discount on price match"
     }
   },
   "faq_common": {
@@ -144,6 +210,70 @@
       {
         "question": "What if a product arrives damaged?",
         "answer": "Contact us immediately with photos. We will replace it or refund 100%. Damaged shipments are rare, but we guarantee satisfaction."
+      },
+      {
+        "question": "Do you ship internationally?",
+        "answer": "Yes! We ship to over 150 countries. International delivery takes 10-21 business days. Customers are responsible for customs duties and taxes."
+      },
+      {
+        "question": "How long does a refund take?",
+        "answer": "Refunds are processed within 5-7 business days after we receive and inspect your returned item. The refund appears on your original payment method."
+      },
+      {
+        "question": "Can I cancel my order?",
+        "answer": "You can cancel before shipment in your account or by contacting support. Cancellations after shipment follow our standard return policy."
+      },
+      {
+        "question": "What laptops do you sell?",
+        "answer": "We carry ProBook 15X Ultra ($1,299), UltraBook Air M2 ($899), GameForce RTX 5080 ($1,899), WorkStation Pro 17 ($1,599), and SlimBook 14 ($649). Visit our laptops section for full specs."
+      },
+      {
+        "question": "What smartphones do you have?",
+        "answer": "Our lineup includes TechFlow Pro Max ($999), TechFlow Lite ($449), and TechFlow Fold ($1,499). We also sell Tab Elite 12 and Tab Mini 8 tablets."
+      },
+      {
+        "question": "Do you offer free shipping?",
+        "answer": "Yes! Standard shipping is FREE on all orders over $100. Orders under $100 have a $9.99 standard shipping fee."
+      },
+      {
+        "question": "How do I contact customer support?",
+        "answer": "Call 1-800-TECHFLOW (1-800-832-4356), email support@techflowelectronics.com, or use live chat Mon-Sat 9AM-9PM EST."
+      },
+      {
+        "question": "What is your price match policy?",
+        "answer": "Found a lower price within 7 days? Email us with proof from an authorized retailer. We price match and give an extra 10% off!"
+      },
+      {
+        "question": "How do I reset my password?",
+        "answer": "Click Forgot Password on the login page. We email a reset link valid for 24 hours. Check spam if you don't see it within 5 minutes."
+      },
+      {
+        "question": "Do you offer financing?",
+        "answer": "Yes! 0% APR financing is available on orders over $500 for 12 months. Select financing at checkout to apply."
+      },
+      {
+        "question": "What accessories do you sell?",
+        "answer": "We offer chargers, headphones, laptop sleeves, wireless mice, webcams, and mechanical keyboards. Browse our accessories section for full catalog."
+      },
+      {
+        "question": "How do I earn loyalty points?",
+        "answer": "Sign up for TechFlow Rewards (free). Earn 1 point per dollar spent. Redeem 100 points for $5 off your next order."
+      },
+      {
+        "question": "What is your warranty coverage?",
+        "answer": "Standard 1-2 year manufacturer warranty covers defects. Extended warranty up to 5 years adds accidental damage protection. Water damage from misuse is excluded."
+      },
+      {
+        "question": "Can I change my shipping address?",
+        "answer": "Contact support immediately if your order hasn't shipped. Once shipped, address changes are not possible — you may need to refuse delivery and reorder."
+      },
+      {
+        "question": "Do you have a student discount?",
+        "answer": "Yes! Students get 10% off with a valid .edu email. Sign up for our student program on the website to receive your discount code."
+      },
+      {
+        "question": "What are your store hours?",
+        "answer": "Our online store is open 24/7. Phone support is available Monday-Sunday 8AM-11PM EST. Live chat is Mon-Sat 9AM-9PM EST."
       }
     ]
   },
@@ -151,6 +281,8 @@
     "phone": "1-800-TECHFLOW (1-800-832-4356)",
     "email": "support@techflowelectronics.com",
     "live_chat": "Available 9AM-9PM EST, Monday-Saturday",
+    "escalation": "Ask for a supervisor via phone or email for unresolved issues within 48 hours",
+    "response_time": "Email responses within 24 hours; live chat immediate during hours",
     "social": {
       "twitter": "@TechFlowCorp",
       "instagram": "@TechFlowElectronics",
@@ -161,6 +293,10 @@
     "forgot_password": "Click Forgot Password on login. We will email you a reset link (valid 24 hours). Create a new password and you are back in!",
     "slow_checkout": "Clear browser cache (Ctrl+Shift+Del) and cookies. Disable ad-blockers temporarily. Or try a different browser.",
     "out_of_stock": "Subscribe to our notification and we will email when it is back! Usually restocks within 2-4 weeks.",
-    "price_match": "Found a lower price? Email support@techflowelectronics.com within 7 days with proof. We will price match plus give 10% off!"
+    "price_match": "Found a lower price? Email support@techflowelectronics.com within 7 days with proof. We will price match plus give 10% off!",
+    "payment_declined": "Verify card details, ensure sufficient funds, and try a different payment method. Contact your bank if the issue persists.",
+    "order_not_received": "Check tracking in your account. If marked delivered but not received, contact us within 48 hours for investigation.",
+    "wrong_item_shipped": "Contact support with your order number and photos. We will send the correct item and provide a prepaid return label.",
+    "account_locked": "Too many failed login attempts lock your account for 30 minutes. Use Forgot Password or wait and try again."
   }
 }

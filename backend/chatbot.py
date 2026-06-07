@@ -138,17 +138,17 @@ class OllamaAIChatbot:
                 available = any(self.model in m for m in models)
 
                 if available:
-                    print(f"✓ Ollama connected! Model '{self.model}' available.")
+                    print(f"Ollama connected! Model '{self.model}' available.")
                     return True
                 else:
-                    print(f"⚠ Model '{self.model}' not found.")
+                    print(f"Warning: Model '{self.model}' not found.")
                     return False
 
         except requests.exceptions.ConnectionError:
-            print("⚠ Ollama not running. Start with: ollama serve")
+            print("Warning: Ollama not running. Start with: ollama serve")
             return False
         except Exception as e:
-            print(f"⚠ Ollama check failed: {e}")
+            print(f"Warning: Ollama check failed: {e}")
             return False
     
     def _preprocess_text(self, text):
@@ -250,29 +250,47 @@ Please rephrase this answer to directly address the customer's specific question
         
         return faq_answer  # Return original if AI fails
     
-    def _generate_ollama_response(self, user_message, intent, context=""):
+    def _format_conversation_history(self, conversation_history):
+        """Format recent messages for Ollama context."""
+        if not conversation_history:
+            return ""
+        lines = []
+        for msg in conversation_history[-6:]:
+            role = msg.get('role', 'user').capitalize()
+            content = msg.get('content', '')
+            if content:
+                lines.append(f"{role}: {content}")
+        if not lines:
+            return ""
+        return "Recent Conversation:\n" + "\n".join(lines) + "\n\n"
+
+    def _generate_ollama_response(self, user_message, intent, conversation_history=None):
         """
         Generate AI response using Ollama for complex queries.
-        
+
         Args:
             user_message: Original user query
             intent: Recognized intent
-            context: Business context to include
+            conversation_history: Recent session messages for multi-turn context
         """
         if not self.ollama_available:
             return None
-        
-        # Build context for Ollama
+
+        history_block = self._format_conversation_history(conversation_history or [])
+
         business_context = f"""
 You are a helpful customer service AI for {self.business_data.get('business_info', {}).get('name', 'our business')}.
 
 Business Info:
 {json.dumps(self.business_data.get('business_info', {}), indent=2)}
 
+Products:
+{json.dumps(self.business_data.get('products', {}), indent=2)}
+
 Policies:
 {json.dumps(self.business_data.get('policies', {}), indent=2)}
 
-Customer Query: {user_message}
+{history_block}Customer Query: {user_message}
 Recognized Intent: {intent}
 
 Provide a helpful, professional response. Be concise (1-2 sentences). Stay in character as a customer service agent.
@@ -340,14 +358,15 @@ Provide a helpful, professional response. Be concise (1-2 sentences). Stay in ch
         
         return best_intent, best_score
     
-    def get_response(self, user_message, use_ai=None):
+    def get_response(self, user_message, use_ai=None, conversation_history=None):
         """
         Main response function - Hybrid approach.
-        
+
         Args:
             user_message: User query
             use_ai: Force AI mode (None = auto-decide)
-        
+            conversation_history: Recent session messages for multi-turn context
+
         Returns:
             dict with response, intent, confidence, model_used
         """
@@ -410,8 +429,9 @@ Provide a helpful, professional response. Be concise (1-2 sentences). Stay in ch
         # STEP 3: Use Ollama AI for unusual queries (if available)
         if use_ai or (self.ollama_available and not use_ai is False):
             ai_response = self._generate_ollama_response(
-                user_message, 
-                intent or "general_inquiry"
+                user_message,
+                intent or "general_inquiry",
+                conversation_history=conversation_history,
             )
             
             if ai_response:
@@ -463,19 +483,24 @@ def get_chatbot(model='mistral'):
     return _chatbot_instances[model]
 
 
-def chat(user_message, use_ai=None, model='mistral'):
+def chat(user_message, use_ai=None, model='mistral', conversation_history=None):
     """
     Get response from chatbot with model selection.
-    
+
     Args:
         user_message: User query
         use_ai: Force AI/FAQ mode (None = auto)
         model: 'mistral', 'llama2', or 'neural-chat'
-    
+        conversation_history: Recent session messages for multi-turn context
+
     Returns:
         dict with response, intent, confidence, model_used
     """
     logger.info(f"Chat called with model: {model}, use_ai: {use_ai}")
     chatbot = get_chatbot(model)
     logger.info(f"Chatbot instance for model '{model}' ready. Processing message...")
-    return chatbot.get_response(user_message, use_ai=use_ai)
+    return chatbot.get_response(
+        user_message,
+        use_ai=use_ai,
+        conversation_history=conversation_history,
+    )

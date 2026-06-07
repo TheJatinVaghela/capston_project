@@ -99,7 +99,12 @@
         "charge issue",
         "payment not working",
         "transaction failed",
-        "payment declined"
+        "payment declined",
+        "double charged",
+        "wrong amount charged",
+        "payment dispute",
+        "credit card not accepted",
+        "paypal not working"
       ],
       "responses": [
         "Please check that your card details are correct and try again. Contact your bank if the issue persists.",
@@ -117,7 +122,12 @@
         "account access",
         "recover account",
         "reset login",
-        "forgot username"
+        "forgot username",
+        "cannot sign in",
+        "login not working",
+        "account locked",
+        "verify my account",
+        "two factor authentication"
       ],
       "responses": [
         "Click 'Forgot Password' on the login page to reset your password via email.",
@@ -172,7 +182,12 @@
         "bad experience",
         "unhappy",
         "defective",
-        "broken"
+        "broken",
+        "terrible service",
+        "worst experience",
+        "file a complaint",
+        "not happy with",
+        "disappointed with"
       ],
       "responses": [
         "I'm sorry to hear you're having issues. Please contact our support team for immediate assistance.",
@@ -206,7 +221,12 @@
         "how do i earn points",
         "membership benefits",
         "vip program",
-        "discount code"
+        "discount code",
+        "redeem points",
+        "rewards balance",
+        "loyalty points",
+        "member discount",
+        "earn rewards"
       ],
       "responses": [
         "Join our loyalty program and earn points on every purchase! Redeem points for discounts.",

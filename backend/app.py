@@ -4,6 +4,8 @@ Hybrid Q&A System with Pattern Matching + AI Generation
 """
 
 import logging
+import uuid
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s"
@@ -14,47 +16,17 @@ from datetime import datetime, timezone
 
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from datetime import datetime
 import json
 import os
 from chatbot import chat
+import database as db
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, origins=["http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:5000", "http://127.0.0.1:5000"])
+
+
 def now_utc():
     return datetime.now(timezone.utc).isoformat()
-# In-memory conversation history
-conversation_history = []
-CHAT_LOGS_FILE = 'chat_logs.json'
-
-# Current AI model
-current_model = 'mistral'
-
-
-def _ensure_logs_file():
-    """Ensure chat_logs.json exists."""
-    if not os.path.exists(CHAT_LOGS_FILE):
-        with open(CHAT_LOGS_FILE, 'w', encoding='utf-8') as f:
-            json.dump([], f)
-
-
-def _load_logs():
-    """Load chat logs from file."""
-    _ensure_logs_file()
-    try:
-        with open(CHAT_LOGS_FILE, 'r', encoding='utf-8') as f:
-            return json.load(f)
-    except:
-        return []
-
-
-def _save_logs(logs):
-    """Save chat logs to file."""
-    try:
-        with open(CHAT_LOGS_FILE, 'w', encoding='utf-8') as f:
-            json.dump(logs, f, indent=2, ensure_ascii=False)
-    except Exception as e:
-        print(f"Error saving logs: {e}")
 
 
 @app.route('/', methods=['GET'])
@@ -63,13 +35,15 @@ def home():
     return jsonify({
         "status": "running",
         "message": "AI Customer Service Chatbot with Ollama Integration",
-        "version": "2.0.0",
+        "version": "3.0.0",
         "features": [
             "Pattern-based FAQ matching",
             "NLTK NLP preprocessing",
             "Ollama AI integration (Mistral, Llama2, Neural-Chat)",
             "Hybrid Q&A system",
-            "Business knowledge base"
+            "Business knowledge base",
+            "SQLite session logging",
+            "React frontend support"
         ]
     }), 200
 
@@ -78,12 +52,13 @@ def home():
 def chat_endpoint():
     """
     Main chat endpoint with Ollama support.
-    
+
     Request JSON:
     {
         "message": "user message here",
-        "use_ai": false,  # Optional: force AI or pattern matching
-        "model": "mistral"  # Optional: choose model
+        "use_ai": false,
+        "model": "mistral",
+        "session_id": "optional-uuid"
     }
     """
     try:
@@ -95,7 +70,7 @@ def chat_endpoint():
                 "intent": "error",
                 "confidence": 0.0,
                 "model_used": "system",
-                "timestamp": datetime.now(timezone.utc).isoformat()
+                "timestamp": now_utc()
             }), 400
         if not isinstance(data, dict):
             logger.error(f"Invalid JSON format: {data}")
@@ -109,14 +84,14 @@ def chat_endpoint():
                 "intent": "error",
                 "confidence": 0.0,
                 "model_used": "system",
-                "timestamp": datetime.now(timezone.utc).isoformat()
+                "timestamp": now_utc()
             }), 400
-        
-        logger.info(f"Processing message: {data['message']}")
+
         user_message = data.get('message', '').strip()
-        use_ai = data.get('use_ai', None)  # None = auto-decide
+        use_ai = data.get('use_ai', None)
         model = data.get('model', 'mistral')
-        
+        session_id = data.get('session_id') or str(uuid.uuid4())
+
         if not user_message:
             return jsonify({
                 "error": "Message cannot be empty.",
@@ -124,13 +99,21 @@ def chat_endpoint():
                 "intent": "error",
                 "confidence": 0.0,
                 "model_used": "system",
-                "timestamp": now_utc()
+                "timestamp": now_utc(),
+                "session_id": session_id
             }), 400
-        logger.info(f"User message: {user_message}, use_ai: {use_ai}, model: {model}")
-        # Get response from chatbot (with model selection)
-        chatbot_response = chat(user_message, use_ai=use_ai, model=model)
 
-        # FORCE normalization (VERY IMPORTANT)
+        logger.info(f"User message: {user_message}, use_ai: {use_ai}, model: {model}, session: {session_id}")
+
+        conversation_history = db.get_recent_conversation(session_id, limit=6)
+
+        chatbot_response = chat(
+            user_message,
+            use_ai=use_ai,
+            model=model,
+            conversation_history=conversation_history,
+        )
+
         if not isinstance(chatbot_response, dict):
             chatbot_response = {
                 "response": str(chatbot_response),
@@ -138,39 +121,28 @@ def chat_endpoint():
                 "confidence": 1.0,
                 "model_used": "fallback"
             }
-        
-        chatbot_response['timestamp'] = now_utc()
+
+        timestamp = now_utc()
+        chatbot_response['timestamp'] = timestamp
         chatbot_response['user_message'] = user_message
-        
-        # Store in memory
-        conversation_history.append({
-            "user": user_message,
-            "bot": chatbot_response['response'],
-            "intent": chatbot_response['intent'],
-            "confidence": chatbot_response['confidence'],
-            "model_used": chatbot_response['model_used'],
-            "timestamp": chatbot_response['timestamp']
-        })
-        
-        # Save to file
+        chatbot_response['session_id'] = session_id
+
         try:
-            logs = _load_logs()
-            logs.append({
-                "user": user_message,
-                "bot": chatbot_response['response'],
-                "intent": chatbot_response['intent'],
-                "confidence": chatbot_response['confidence'],
-                "model_used": chatbot_response['model_used'],
-                "timestamp": chatbot_response['timestamp']
-            })
-            _save_logs(logs)
+            db.save_message(session_id, 'user', user_message, timestamp=timestamp)
+            db.save_message(
+                session_id, 'bot', chatbot_response['response'],
+                intent=chatbot_response['intent'],
+                confidence=chatbot_response['confidence'],
+                model_used=chatbot_response['model_used'],
+                timestamp=timestamp,
+            )
         except Exception as e:
-            print(f"Warning: Could not save log: {e}")
-        
+            logger.warning(f"Could not save to database: {e}")
+
         return jsonify(chatbot_response), 200
-    
+
     except Exception as e:
-        print(f"Error in chat endpoint: {e}")
+        logger.error(f"Error in chat endpoint: {e}")
         return jsonify({
             "error": str(e),
             "response": "An error occurred processing your request.",
@@ -187,7 +159,7 @@ def get_models():
     try:
         import requests
         response = requests.get('http://localhost:11434/api/tags', timeout=2)
-        
+
         if response.status_code == 200:
             models = [tag['name'] for tag in response.json().get('models', [])]
             return jsonify({
@@ -201,7 +173,7 @@ def get_models():
                 "message": "Ollama not responding",
                 "solution": "Start Ollama with: ollama serve"
             }), 200
-    
+
     except Exception as e:
         return jsonify({
             "ollama_available": False,
@@ -212,9 +184,11 @@ def get_models():
 
 @app.route('/logs', methods=['GET'])
 def get_logs():
-    """Retrieve all chat logs."""
+    """Retrieve chat logs."""
     try:
-        logs = _load_logs()
+        session_id = request.args.get('session_id')
+        limit = request.args.get('limit', 100, type=int)
+        logs = db.get_logs(session_id=session_id, limit=limit)
         return jsonify({
             "total": len(logs),
             "logs": logs
@@ -231,10 +205,7 @@ def get_logs():
 def clear_logs():
     """Clear all chat logs."""
     try:
-        _save_logs([])
-        global conversation_history
-        conversation_history = []
-        
+        db.clear_logs()
         return jsonify({
             "status": "success",
             "message": "All chat logs cleared."
@@ -246,31 +217,25 @@ def clear_logs():
         }), 500
 
 
+@app.route('/sessions/<session_id>/messages', methods=['GET'])
+def get_session_messages(session_id):
+    """Return all messages for a session (for page refresh / history load)."""
+    try:
+        messages = db.get_session_messages(session_id)
+        return jsonify({
+            "session_id": session_id,
+            "total": len(messages),
+            "messages": messages
+        }), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 @app.route('/stats', methods=['GET'])
 def get_stats():
-    """Get chatbot statistics."""
+    """Get chatbot statistics from SQLite."""
     try:
-        logs = _load_logs()
-        
-        intent_counts = {}
-        model_usage = {}
-        
-        for log in logs:
-            intent = log.get('intent', 'unknown')
-            intent_counts[intent] = intent_counts.get(intent, 0) + 1
-            
-            model = log.get('model_used', 'unknown')
-            model_usage[model] = model_usage.get(model, 0) + 1
-        
-        confidences = [log.get('confidence', 0) for log in logs if log.get('confidence', 0) > 0]
-        avg_confidence = sum(confidences) / len(confidences) if confidences else 0
-        
-        return jsonify({
-            "total_messages": len(logs),
-            "average_confidence": round(avg_confidence, 2),
-            "intent_distribution": intent_counts,
-            "model_usage": model_usage
-        }), 200
+        return jsonify(db.get_stats()), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -279,10 +244,10 @@ def get_stats():
 def get_business_info():
     """Get business information."""
     try:
-        with open('business_data.json', 'r') as f:
+        with open('business_data.json', 'r', encoding='utf-8') as f:
             data = json.load(f)
             return jsonify(data.get('business_info', {})), 200
-    except:
+    except Exception:
         return jsonify({"error": "Business info not available"}), 500
 
 
@@ -297,6 +262,7 @@ def not_found(error):
             "GET /models",
             "GET /logs",
             "DELETE /logs",
+            "GET /sessions/<session_id>/messages",
             "GET /stats",
             "GET /business-info"
         ]
@@ -313,28 +279,24 @@ def internal_error(error):
 
 
 if __name__ == '__main__':
-    _ensure_logs_file()
-    
+    db.init_db()
+
     print("=" * 70)
     print("AI Customer Service Chatbot with Ollama Integration")
     print("=" * 70)
     print("Server: http://127.0.0.1:5000")
-    print("Frontend: ../frontend/index.html")
+    print("React Frontend: ../frontend-react (npm run dev -> http://localhost:5173)")
+    print("Legacy Frontend: ../frontend/index.html")
     print("")
     print("Features:")
-    print("  ✓ Pattern-based FAQ matching")
-    print("  ✓ NLTK NLP preprocessing")
-    print("  ✓ Ollama AI integration")
-    print("  ✓ Business knowledge base (TechFlow Electronics)")
-    print("  ✓ Hybrid Q&A system")
+    print("  Pattern-based FAQ matching")
+    print("  NLTK NLP preprocessing")
+    print("  Ollama AI integration")
+    print("  SQLite session logging")
+    print("  React + MUI frontend support")
     print("")
     print("Make sure Ollama is running:")
     print("  ollama serve")
-    print("")
-    print("Pull models if needed:")
-    print("  ollama pull mistral")
-    print("  ollama pull llama2")
-    print("  ollama pull neural-chat")
     print("=" * 70)
-    
+
     app.run(debug=True, host='127.0.0.1', port=5000)

@@ -42,6 +42,11 @@ instance/
 
 # Chat logs
 chat_logs.json
+*.db
+
+# React frontend
+frontend-react/node_modules/
+frontend-react/dist/
 
 # NLTK data
 ~/nltk_data/
