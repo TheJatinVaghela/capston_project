@@ -1,25 +1,29 @@
 import { useState, useEffect } from 'react'
 
-const SESSION_KEY = 'techflow_session_id'
-
-export function useSession() {
-  const [sessionId, setSessionId] = useState('')
+export function useSession(storageKey = 'sf_session_id') {
+  const [sessionId, setSessionIdState] = useState('')
 
   useEffect(() => {
-    let id = localStorage.getItem(SESSION_KEY)
+    let id = localStorage.getItem(storageKey)
     if (!id) {
       id = crypto.randomUUID()
-      localStorage.setItem(SESSION_KEY, id)
+      localStorage.setItem(storageKey, id)
     }
-    setSessionId(id)
-  }, [])
+    setSessionIdState(id)
+  }, [storageKey])
 
   const resetSession = () => {
     const id = crypto.randomUUID()
-    localStorage.setItem(SESSION_KEY, id)
-    setSessionId(id)
+    localStorage.setItem(storageKey, id)
+    setSessionIdState(id)
     return id
   }
 
-  return { sessionId, resetSession }
+  const loadSession = (id) => {
+    if (!id) return
+    localStorage.setItem(storageKey, id)
+    setSessionIdState(id)
+  }
+
+  return { sessionId, resetSession, loadSession }
 }

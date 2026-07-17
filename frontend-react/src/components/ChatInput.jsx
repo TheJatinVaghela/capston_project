@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { Box, TextField, IconButton, Paper } from '@mui/material'
+import { Box, TextField, IconButton } from '@mui/material'
 import SendIcon from '@mui/icons-material/Send'
 
-export default function ChatInput({ onSend, disabled }) {
+export default function ChatInput({ onSend, disabled, primaryColor }) {
   const [text, setText] = useState('')
 
   const handleSend = () => {
@@ -19,15 +19,20 @@ export default function ChatInput({ onSend, disabled }) {
     }
   }
 
+  const btnBg = primaryColor || undefined
+
   return (
-    <Paper
-      elevation={3}
+    <Box
       sx={{
-        p: 1.5,
+        p: 0.75,
         display: 'flex',
         gap: 1,
         alignItems: 'flex-end',
-        borderRadius: 2,
+        borderRadius: 3,
+        bgcolor: 'background.paper',
+        border: '1px solid',
+        borderColor: 'divider',
+        boxShadow: 2,
       }}
     >
       <TextField
@@ -41,16 +46,32 @@ export default function ChatInput({ onSend, disabled }) {
         disabled={disabled}
         size="small"
         variant="outlined"
-        sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+        sx={{
+          '& .MuiOutlinedInput-root': {
+            borderRadius: 2.5,
+            bgcolor: 'transparent',
+            '& fieldset': { border: 'none' },
+          },
+        }}
       />
       <IconButton
         color="primary"
         onClick={handleSend}
         disabled={disabled || !text.trim()}
-        sx={{ bgcolor: 'primary.main', color: 'white', '&:hover': { bgcolor: 'primary.dark' }, '&.Mui-disabled': { bgcolor: 'action.disabledBackground' } }}
+        sx={{
+          bgcolor: btnBg || 'primary.main',
+          color: 'white',
+          width: 42,
+          height: 42,
+          borderRadius: 2.5,
+          mb: 0.25,
+          mr: 0.25,
+          '&:hover': { bgcolor: btnBg || 'primary.dark', filter: btnBg ? 'brightness(0.92)' : undefined },
+          '&.Mui-disabled': { bgcolor: 'action.disabledBackground' },
+        }}
       >
-        <SendIcon />
+        <SendIcon fontSize="small" />
       </IconButton>
-    </Paper>
+    </Box>
   )
 }

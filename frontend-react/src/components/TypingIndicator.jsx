@@ -1,10 +1,25 @@
 import { Box, Paper } from '@mui/material'
 import SmartToyIcon from '@mui/icons-material/SmartToy'
 
-export default function TypingIndicator() {
+export default function TypingIndicator({ colors }) {
+  const accent = colors?.primary || 'primary.main'
   return (
-    <Box sx={{ display: 'flex', gap: 1, mb: 1.5, alignItems: 'flex-start' }}>
-      <SmartToyIcon sx={{ color: 'primary.main', mt: 0.5, fontSize: 20 }} />
+    <Box sx={{ display: 'flex', gap: 1.15, mb: 1.75, alignItems: 'flex-start' }}>
+      <Box
+        sx={{
+          width: 28,
+          height: 28,
+          borderRadius: 1.5,
+          bgcolor: 'rgba(15, 118, 110, 0.1)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          mt: 0.35,
+          flexShrink: 0,
+        }}
+      >
+        <SmartToyIcon sx={{ color: accent, fontSize: 16 }} />
+      </Box>
       <Paper
         elevation={0}
         sx={{
@@ -26,7 +41,7 @@ export default function TypingIndicator() {
               width: 8,
               height: 8,
               borderRadius: '50%',
-              bgcolor: 'primary.main',
+              bgcolor: accent,
               opacity: 0.6,
               animation: 'bounce 1.2s infinite',
               animationDelay: `${i * 0.2}s`,
