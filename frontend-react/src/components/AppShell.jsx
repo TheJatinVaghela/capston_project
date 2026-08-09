@@ -111,21 +111,51 @@ export default function AppShell({ children }) {
                 </Box>
 
                 {businesses.length > 0 && (
-                  <FormControl size="small" sx={{ minWidth: 150 }}>
+                  <FormControl size="small" sx={{ minWidth: 160, maxWidth: 220 }}>
                     <Select
                       value={activeBusinessId || ''}
                       onChange={(e) => selectBusiness(e.target.value)}
+                      displayEmpty
                       sx={{
-                        color: '#fff',
+                        color: '#e8eef5 !important',
                         fontSize: '0.85rem',
                         borderRadius: 2,
-                        '.MuiOutlinedInput-notchedOutline': {
-                          borderColor: 'rgba(255,255,255,0.22)',
+                        // Theme sets OutlinedInput to white paper — override for dark nav
+                        backgroundColor: 'rgba(255,255,255,0.12) !important',
+                        '& .MuiSelect-select': {
+                          color: '#e8eef5 !important',
+                          py: 1,
+                        },
+                        '& .MuiOutlinedInput-notchedOutline': {
+                          borderColor: 'rgba(255,255,255,0.28)',
+                        },
+                        '&:hover': {
+                          backgroundColor: 'rgba(255,255,255,0.16) !important',
                         },
                         '&:hover .MuiOutlinedInput-notchedOutline': {
-                          borderColor: 'rgba(255,255,255,0.4)',
+                          borderColor: 'rgba(255,255,255,0.45)',
                         },
-                        '.MuiSvgIcon-root': { color: 'rgba(255,255,255,0.7)' },
+                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                          borderColor: '#2dd4bf',
+                        },
+                        '& .MuiSvgIcon-root': { color: 'rgba(232,238,245,0.9)' },
+                      }}
+                      MenuProps={{
+                        PaperProps: {
+                          sx: {
+                            bgcolor: '#0b1f33',
+                            color: '#e8eef5',
+                            border: '1px solid rgba(255,255,255,0.12)',
+                            '& .MuiMenuItem-root': {
+                              color: '#e8eef5',
+                              '&:hover': { bgcolor: 'rgba(255,255,255,0.08)' },
+                              '&.Mui-selected': {
+                                bgcolor: 'rgba(45,212,191,0.2)',
+                                '&:hover': { bgcolor: 'rgba(45,212,191,0.28)' },
+                              },
+                            },
+                          },
+                        },
                       }}
                     >
                       {businesses.map((b) => (

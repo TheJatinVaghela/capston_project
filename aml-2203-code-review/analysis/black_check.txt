@@ -1,0 +1,11 @@
+﻿.\.venv\Scripts\black.exe : would reformat backend\language_util.py
+At C:\Users\whatw\AppData\Local\Temp\ps-script-5c715663-8481-483c-8dad-0e3de81e9515.ps1:121 char:4
++ "; .\.venv\Scripts\black.exe --check backend\auth.py backend\config.p ...
++    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (would reformat backend\language_util.py:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+would reformat backend\config.py
+
+Oh no! \U0001f4a5 \U0001f494 \U0001f4a5
+2 files would be reformatted, 2 files would be left unchanged.

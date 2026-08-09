@@ -30,7 +30,7 @@ export default function PreviewChatPage({ demoMode = false }) {
     id: 'welcome',
     role: 'bot',
     content:
-      `Welcome to ${companyName} support! Ask me about products, shipping, returns, payments, or policies.\n\n` +
+      `Welcome to ${companyName} support! Ask me anything about this business.\n\n` +
       (demoMode
         ? 'This is the public TechFlow demo. Try Spanish or French too — e.g. "Hola" or "Bonjour".'
         : 'You are previewing as a customer. Past chats are in the history panel.'),

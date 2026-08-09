@@ -251,8 +251,8 @@ def create_business(owner_id, name, website="", description=""):
         f"Company name: {name.strip()}\n"
         f"Website: {website.strip()}\n"
         f"About: {description.strip()}\n\n"
-        "Add your products, shipping policy, returns, support hours, FAQs, "
-        "and any other customer-support information below.\n"
+        "Add customer-support information below: what you offer, policies, "
+        "hours, FAQs, and how customers can get help.\n"
     )
     knowledge = {
         "text": starter,

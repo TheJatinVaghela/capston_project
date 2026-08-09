@@ -1,6 +1,7 @@
 """Application configuration from environment variables."""
 
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -31,6 +32,17 @@ STRIPE_PRICE_ID_PROFESSIONAL = os.getenv("STRIPE_PRICE_ID_PROFESSIONAL", "")
 STRIPE_PRICE_ID_PREMIUM = os.getenv("STRIPE_PRICE_ID_PREMIUM", "")
 
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173").rstrip("/")
+# Public URL when sharing via ngrok/cloudflare (defaults to FRONTEND_URL)
+PUBLIC_BASE_URL = os.getenv("PUBLIC_BASE_URL", FRONTEND_URL).rstrip("/")
+# Bind address for laptop hosting (0.0.0.0 = reachable by tunnels)
+HOST = os.getenv("HOST", "127.0.0.1").strip() or "127.0.0.1"
+PORT = int(os.getenv("PORT", "5000"))
+# Allow *.ngrok*.app / *.trycloudflare.com origins while sharing from your laptop
+ALLOW_TUNNEL_ORIGINS = os.getenv("ALLOW_TUNNEL_ORIGINS", "true").strip().lower() in (
+    "1",
+    "true",
+    "yes",
+)
 FREE_PREVIEW_CHAT_LIMIT = int(os.getenv("FREE_PREVIEW_CHAT_LIMIT", "100"))
 
 PRODUCT_NAME = os.getenv("PRODUCT_NAME", "SupportFlow")
@@ -169,9 +181,9 @@ def highest_account_plan(businesses) -> str:
 
 
 def count_words(text: str) -> int:
-    import re
-
+    """Count whitespace-separated tokens for plan knowledge limits."""
     return len(re.findall(r"\S+", text or ""))
+
 
 # Local Flask debug (never enable in production)
 DEBUG = os.getenv("FLASK_DEBUG", "0").strip() in ("1", "true", "True", "yes")

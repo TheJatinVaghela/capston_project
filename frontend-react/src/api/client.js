@@ -1,4 +1,14 @@
-const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000'
+const API_URL = (() => {
+  if (import.meta.env.VITE_API_URL) return import.meta.env.VITE_API_URL.replace(/\/$/, '')
+  // When the UI is served from Flask (same host as the API), use same-origin.
+  if (typeof window !== 'undefined') {
+    const host = window.location.hostname
+    if (host && host !== 'localhost' && host !== '127.0.0.1') {
+      return window.location.origin
+    }
+  }
+  return 'http://127.0.0.1:5000'
+})()
 
 function authHeaders() {
   const token = localStorage.getItem('sf_token')

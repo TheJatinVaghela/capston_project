@@ -24,6 +24,7 @@ wheels/
 venv/
 ENV/
 env/
+.venv/
 .venv
 
 # IDE
@@ -40,30 +41,52 @@ env/
 instance/
 .webassets-cache
 
-# Chat logs
+# Chat logs / local DB
 chat_logs.json
 *.db
+backend/chat_logs.db
 
-# React frontend
-frontend-react/node_modules/
+# React / Node
+**/node_modules/
 frontend-react/dist/
+frontend/node_modules/
 
 # NLTK data
-~/nltk_data/
+nltk_data/
 
-# Environment variables
+# Environment / secrets — never commit
 .env
-.env.local
-.env.*.local
+.env.*
+!.env.example
+backend/.env
+**/.env
 
 # OS
 Thumbs.db
-.DS_Store
+Desktop.ini
 
-# Temporary files
+# Temporary / scratch
 *.tmp
 *.temp
 *.log
+_tmp_*
+weekly_reports/_tmp_*
 
-# Dependencies downloads
-*.whl
+# Microsoft Office lock / temp files
+~$*
+**/~$*
+
+# Large local binaries / recordings (install locally)
+tools/stripe/stripe.exe
+*.exe
+PPTvideos/
+*.mp4
+*.mov
+*.avi
+
+# Python cache / tooling noise
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+.coverage

@@ -1,0 +1,23 @@
+﻿backend\app.py:158:101: E501 line too long (105 > 100 characters)
+backend\app.py:580:101: E501 line too long (101 > 100 characters)
+backend\app.py:1092:101: E501 line too long (103 > 100 characters)
+backend\app.py:1105:101: E501 line too long (101 > 100 characters)
+backend\app.py:1166:101: E501 line too long (102 > 100 characters)
+backend\app.py:1177:101: E501 line too long (110 > 100 characters)
+backend\app.py:1311:101: E501 line too long (112 > 100 characters)
+backend\app.py:1694:101: E501 line too long (102 > 100 characters)
+backend\app.py:1707:1: W391 blank line at end of file
+backend\chatbot.py:197:101: E501 line too long (106 > 100 characters)
+backend\chatbot.py:210:101: E501 line too long (106 > 100 characters)
+backend\chatbot.py:892:31: E203 whitespace before ':'
+backend\chatbot.py:1068:101: E501 line too long (121 > 100 characters)
+backend\chatbot.py:1070:101: E501 line too long (102 > 100 characters)
+backend\chatbot.py:1293:5: F824 `global _chatbot_instances` is unused: name is never assigned in scope
+backend\config.py:188:1: E305 expected 2 blank lines after class or function definition, found 1
+backend\database.py:275:101: E501 line too long (102 > 100 characters)
+1     E203 whitespace before ':'
+1     E305 expected 2 blank lines after class or function definition, found 1
+13    E501 line too long (105 > 100 characters)
+1     F824 `global _chatbot_instances` is unused: name is never assigned in scope
+1     W391 blank line at end of file
+17

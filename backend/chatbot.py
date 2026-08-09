@@ -1,4 +1,4 @@
-﻿"""
+"""
 Tenant-aware chatbot with Ollama AI + support-only guardrails.
 Hybrid: FAQ match → NLTK patterns → Ollama (scoped to company knowledge).
 """
@@ -31,7 +31,7 @@ _SOCIAL_I18N = {
         "de": "Hallo! Womit kann ich Ihnen helfen?",
         "it": "Ciao! Come posso aiutarti?",
         "hi": "नमस्ते! मैं आपकी कैसे मदद कर सकता हूँ?",
-        "gu": "Kem cho! Hu tamari madad kari shaku? Shipping, returns, ke products vishe pucho.",
+        "gu": "Kem cho! Hu tamari madad kari shaku? Tamara saval pucho.",
         "zh": "您好！有什么可以帮您的吗？",
         "ja": "こんにちは！どのようにお手伝いできますか？",
         "ko": "안녕하세요! 무엇을 도와드릴까요?",
@@ -204,6 +204,28 @@ class OllamaAIChatbot:
                 if len(parts) == 2 and parts[1].strip():
                     return parts[1].strip()[:80]
         return "our company"
+
+    def _business_about_snippet(self, max_chars=400):
+        """Short business context for greetings — not a full knowledge dump."""
+        info = self.business_data.get("business_info", {}) if isinstance(self.business_data, dict) else {}
+        bits = []
+        if info.get("name"):
+            bits.append(f"Name: {info['name']}")
+        if info.get("description"):
+            bits.append(f"About: {info['description']}")
+        if info.get("website"):
+            bits.append(f"Website: {info['website']}")
+        blob = self._knowledge_blob().strip()
+        if blob:
+            # Prefer an About/Description line if present
+            for line in blob.splitlines():
+                low = line.lower().strip()
+                if low.startswith(("about:", "description:", "we are", "we provide", "company:")):
+                    bits.append(line.strip())
+                    break
+            bits.append(blob[: max_chars])
+        text = "\n".join(bits).strip()
+        return text[:max_chars] if text else ""
 
     def _knowledge_blob(self):
         data = self.business_data or {}
@@ -409,8 +431,10 @@ class OllamaAIChatbot:
             "Rules:\n"
             f"- Your company name is {name}.\n"
             "- Answer using ONLY the facts inside <<<KB_START>>>…<<<KB_END>>>.\n"
-            "- State facts directly: shipping times, prices, policies.\n"
+            "- State facts directly from that knowledge (policies, features, hours, etc.).\n"
             "- NEVER invent prices, times, or policies.\n"
+            "- Do NOT assume this is an online store. Only mention orders, shipping, "
+            "returns, or products if those topics appear in the knowledge.\n"
             f"- LANGUAGE (STRICT): The customer's CURRENT message is in {label}. "
             f"You MUST write your entire reply in {label} ONLY.\n"
             "- Ignore the language of earlier messages in the conversation. "
@@ -619,14 +643,28 @@ class OllamaAIChatbot:
                 "(example style: \"Main theek hoon! Aapki kaise madad karu?\").\n"
             )
 
+        name = self._company_name()
+        about = self._business_about_snippet(380)
+        about_block = (
+            f"What this business is (use only to shape your greeting topics):\n"
+            f"{about}\n\n"
+            if about
+            else "No detailed business notes yet — keep the greeting generic.\n\n"
+        )
         messages = [
             {
                 "role": "system",
                 "content": (
                     f"You are a friendly greeter for {name} customer support.\n"
                     f"{lang_rules}"
+                    f"{about_block}"
                     "If they greet or ask how you are, greet back warmly in 1–2 short "
-                    "sentences and offer help with orders, shipping, returns, or products.\n"
+                    "sentences and invite them to ask about THIS business.\n"
+                    "Offer help ONLY on topics that fit this business (from the notes above). "
+                    "Examples: if it is a social platform, mention account help / features — "
+                    "NOT shipping. If it is a shop, then orders/shipping are fine.\n"
+                    "Do NOT default to orders, shipping, returns, or products unless those "
+                    "topics appear in the business notes.\n"
                     "Do NOT invent company policies or answer as if looking up the business name.\n"
                     "Do NOT add English translations in parentheses.\n"
                     "NEVER say \"based on\", \"reference data\", \"provided data\", "
@@ -898,35 +936,11 @@ class OllamaAIChatbot:
 
     def _guardrail_refusal(self, lang_code="en"):
         name = self._company_name()
-        templates = {
-            "es": (
-                f"Soy el asistente de soporte de {name}. Solo puedo ayudar con productos, "
-                "pedidos, envíos, devoluciones, pagos y políticas. ¿En qué te ayudo?"
-            ),
-            "fr": (
-                f"Je suis l'assistant support de {name}. Je peux seulement aider pour les "
-                "produits, commandes, livraisons, retours, paiements et politiques."
-            ),
-            "pt": (
-                f"Sou o assistente de suporte da {name}. Posso ajudar com produtos, "
-                "pedidos, envios, devoluções, pagamentos e políticas."
-            ),
-            "de": (
-                f"Ich bin der Support-Assistent von {name}. Ich helfe bei Produkten, "
-                "Bestellungen, Versand, Rückgaben, Zahlungen und Richtlinien."
-            ),
-            "zh": f"我是{name}的客服助手。我只能帮助解答产品、订单、配送、退货、支付与政策相关问题。",
-            "ja": f"私は{name}のサポートアシスタントです。商品・注文・配送・返品・お支払いに関するご質問にお答えします。",
-            "hi": f"मैं {name} का सपोर्ट असिस्टेंट हूँ। मैं उत्पादों, ऑर्डर, शिपिंग, रिटर्न और नीतियों में मदद कर सकता हूँ।",
-        }
         return {
-            "response": templates.get(
-                lang_code,
-                (
-                    f"I'm the customer support assistant for {name}. "
-                    "I can only help with questions about our products, orders, shipping, "
-                    "returns, payments, and company policies. How can I help you with those?"
-                ),
+            "response": (
+                f"I'm the customer support assistant for {name}. "
+                "I can help with questions about this business based on our support notes. "
+                "What would you like to know?"
             ),
             "intent": "guardrail_block",
             "confidence": 1.0,

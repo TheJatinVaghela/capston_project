@@ -161,8 +161,10 @@
   function welcomeText() {
     return (
       "Hi! I'm the support assistant for " +
-      (cfg.business_name || "this store") +
-      ". How can I help with your order, products, or account?"
+      (cfg.business_name || "this business") +
+      ". Ask me anything about " +
+      (cfg.business_name || "us") +
+      " — how can I help?"
     );
   }
 

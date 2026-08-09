@@ -1,4 +1,4 @@
-﻿"""
+"""
 SupportFlow SaaS API — multi-tenant customer chatbot.
 """
 
@@ -35,6 +35,9 @@ config.validate_security_config()
 app = Flask(__name__)
 
 STATIC_DIR = os.path.join(os.path.dirname(__file__), "static")
+FRONTEND_DIST = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..", "frontend-react", "dist")
+)
 
 DASHBOARD_ORIGINS = {
     "http://localhost:5173",
@@ -46,6 +49,7 @@ DASHBOARD_ORIGINS = {
     "http://localhost:5000",
     "http://127.0.0.1:5000",
     config.FRONTEND_URL,
+    config.PUBLIC_BASE_URL,
 }
 
 
@@ -55,6 +59,22 @@ def _is_local_dev_origin(origin: str) -> bool:
         return False
     o = security.normalize_origin(origin or "")
     return o.startswith("http://localhost:") or o.startswith("http://127.0.0.1:")
+
+
+def _is_tunnel_origin(origin: str) -> bool:
+    """Allow common tunnel hosts when sharing the app from a laptop."""
+    if not config.ALLOW_TUNNEL_ORIGINS:
+        return False
+    o = security.normalize_origin(origin or "").lower()
+    markers = (
+        "ngrok-free.app",
+        "ngrok.io",
+        "ngrok.app",
+        "trycloudflare.com",
+        "loca.lt",
+        "localhost.run",
+    )
+    return any(m in o for m in markers)
 
 
 def now_utc():
@@ -150,6 +170,8 @@ def _origin_permitted(origin: str) -> bool:
         return True
     if _is_local_dev_origin(origin):
         return True
+    if _is_tunnel_origin(origin):
+        return True
     key = _widget_key_from_request()
     if key:
         biz = db.get_business_by_widget_key(key)
@@ -224,11 +246,40 @@ def _enforce_widget_origin(biz):
 
 @app.route("/", methods=["GET"])
 def home():
+    # Always serve the React app when built (tunnel / shared link).
+    # Status JSON lives at /health so browsers never get API JSON on "/".
+    index = os.path.join(FRONTEND_DIST, "index.html")
+    if os.path.isfile(index):
+        return send_from_directory(FRONTEND_DIST, "index.html")
     return jsonify(
         {
             "status": "running",
             "product": config.PRODUCT_NAME,
             "version": "4.0.0",
+            "frontend_built": False,
+            "error": "Frontend not built. Run: cd frontend-react && npm run build",
+            "features": [
+                "Multi-tenant businesses",
+                "JWT auth",
+                "Tenant knowledge base",
+                "Support-only AI guardrails",
+                "Stripe subscriptions",
+                "Embeddable widget",
+                "Ollama AI",
+            ],
+        }
+    ), 200
+
+
+@app.route("/health", methods=["GET"])
+def health():
+    index = os.path.join(FRONTEND_DIST, "index.html")
+    return jsonify(
+        {
+            "status": "running",
+            "product": config.PRODUCT_NAME,
+            "version": "4.0.0",
+            "frontend_built": os.path.isfile(index),
             "features": [
                 "Multi-tenant businesses",
                 "JWT auth",
@@ -405,6 +456,45 @@ def update_business(business_id):
     return jsonify({"business": db.public_business_view(biz)}), 200
 
 
+def _knowledge_word_limit_response(text: str, effective: str, max_words: int):
+    """
+    Enforce plan knowledge word limits in one place.
+
+    Returns (word_count, error_response_or_None).
+    error_response is a (jsonify(...), status) tuple when over limit.
+    """
+    word_count = config.count_words(text)
+    if word_count <= max_words:
+        return word_count, None
+    return word_count, (
+        jsonify(
+            {
+                "error": (
+                    f"Knowledge is {word_count} words; your "
+                    f"{effective.title()} plan allows {max_words} words. "
+                    "Shorten the text or upgrade on Billing."
+                ),
+                "word_count": word_count,
+                "max_knowledge_words": max_words,
+                "effective_plan": effective,
+            }
+        ),
+        403,
+    )
+
+
+def _seed_knowledge_business_info(knowledge: dict, biz: dict) -> dict:
+    """Ensure knowledge embeds basic business identity fields."""
+    info = knowledge.setdefault("business_info", {})
+    if not isinstance(info, dict):
+        info = {}
+        knowledge["business_info"] = info
+    info.setdefault("name", biz["name"])
+    info.setdefault("website", biz.get("website") or "")
+    info.setdefault("description", biz.get("description") or "")
+    return knowledge
+
+
 @app.route("/businesses/<business_id>/knowledge", methods=["PUT"])
 @require_business_owner
 def update_knowledge(business_id):
@@ -422,29 +512,14 @@ def update_knowledge(business_id):
         if not isinstance(text, str):
             return jsonify({"error": "text must be a string"}), 400
         text = security.sanitize_knowledge_text(text)
-        word_count = config.count_words(text)
-        if word_count > max_words:
-            return jsonify(
-                {
-                    "error": (
-                        f"Knowledge is {word_count} words; your "
-                        f"{effective.title()} plan allows {max_words} words. "
-                        "Shorten the text or upgrade on Billing."
-                    ),
-                    "word_count": word_count,
-                    "max_knowledge_words": max_words,
-                    "effective_plan": effective,
-                }
-            ), 403
-        warnings = security.knowledge_security_warnings(text)
-        knowledge = dict(biz.get("knowledge") or {})
-        knowledge["text"] = text
-        knowledge.setdefault("business_info", {})
-        knowledge["business_info"].setdefault("name", biz["name"])
-        knowledge["business_info"].setdefault("website", biz.get("website") or "")
-        knowledge["business_info"].setdefault(
-            "description", biz.get("description") or ""
+        word_count, limit_error = _knowledge_word_limit_response(
+            text, effective, max_words
         )
+        if limit_error:
+            return limit_error
+        warnings = security.knowledge_security_warnings(text)
+        knowledge = _seed_knowledge_business_info(dict(biz.get("knowledge") or {}), biz)
+        knowledge["text"] = text
         biz = db.update_business(business_id, knowledge=knowledge)
         return jsonify(
             {
@@ -459,25 +534,17 @@ def update_knowledge(business_id):
     knowledge = data.get("knowledge")
     if not isinstance(knowledge, dict):
         return jsonify({"error": "Provide text (string) or knowledge (object)"}), 400
+    word_count = None
     if isinstance(knowledge.get("text"), str):
         knowledge["text"] = security.sanitize_knowledge_text(knowledge["text"])
-        word_count = config.count_words(knowledge["text"])
-        if word_count > max_words:
-            return jsonify(
-                {
-                    "error": (
-                        f"Knowledge is {word_count} words; your "
-                        f"{effective.title()} plan allows {max_words} words. "
-                        "Shorten the text or upgrade on Billing."
-                    ),
-                    "word_count": word_count,
-                    "max_knowledge_words": max_words,
-                    "effective_plan": effective,
-                }
-            ), 403
+        word_count, limit_error = _knowledge_word_limit_response(
+            knowledge["text"], effective, max_words
+        )
+        if limit_error:
+            return limit_error
     warnings = security.knowledge_security_warnings(knowledge.get("text") or "")
-    info = knowledge.setdefault("business_info", {})
-    info.setdefault("name", biz["name"])
+    knowledge = _seed_knowledge_business_info(knowledge, biz)
+    info = knowledge.get("business_info") or {}
     biz = db.update_business(
         business_id,
         knowledge=knowledge,
@@ -485,7 +552,11 @@ def update_knowledge(business_id):
         website=info.get("website") or biz.get("website") or "",
         description=info.get("description") or biz.get("description") or "",
     )
-    return jsonify({"business": db.public_business_view(biz), "warnings": warnings}), 200
+    payload = {"business": db.public_business_view(biz), "warnings": warnings}
+    if word_count is not None:
+        payload["word_count"] = word_count
+        payload["max_knowledge_words"] = max_words
+    return jsonify(payload), 200
 
 
 @app.route("/businesses/<business_id>/settings", methods=["PUT"])
@@ -1578,6 +1649,40 @@ def embed_config():
     ), 200
 
 
+# Serve built React SPA for client-side routes (/dashboard, /signup, …)
+# Registered last so it never shadows API endpoints.
+@app.route("/<path:path>", methods=["GET"])
+def spa_fallback(path):
+    # Never hijack API-ish paths (GET-only catch-all; POSTs already have their own routes)
+    api_prefixes = (
+        "auth/",
+        "businesses/",
+        "billing/",
+        "sessions/",
+        "embed/",
+        "chat/",
+        "api/",
+    )
+    api_exact = {"chat", "stats", "models", "logs", "widget.js", "favicon.ico"}
+    if path in api_exact or any(path.startswith(p) for p in api_prefixes):
+        return jsonify({"error": "Endpoint not found"}), 404
+
+    file_path = os.path.join(FRONTEND_DIST, path)
+    if os.path.isfile(file_path):
+        return send_from_directory(FRONTEND_DIST, path)
+
+    index = os.path.join(FRONTEND_DIST, "index.html")
+    if os.path.isfile(index):
+        return send_from_directory(FRONTEND_DIST, "index.html")
+
+    return jsonify(
+        {
+            "error": "Frontend not built. Run: cd frontend-react && npm run build",
+            "path": path,
+        }
+    ), 404
+
+
 @app.errorhandler(404)
 def not_found(error):
     return jsonify({"error": "Endpoint not found"}), 404
@@ -1593,19 +1698,30 @@ if __name__ == "__main__":
     db.init_db()
     os.makedirs(STATIC_DIR, exist_ok=True)
 
+    frontend_ready = os.path.isfile(os.path.join(FRONTEND_DIST, "index.html"))
+    public = config.PUBLIC_BASE_URL or config.FRONTEND_URL
+
     print("=" * 70)
     print(f"{config.PRODUCT_NAME} — SaaS Customer Chatbot")
     print("=" * 70)
     print(f"Environment: {config.ENVIRONMENT}")
-    print("Server: http://127.0.0.1:5000")
-    print("Frontend: http://localhost:5173")
-    print("Widget: http://127.0.0.1:5000/widget.js")
+    print(f"Server: http://{config.HOST}:{config.PORT}")
+    print(f"Frontend URL (Stripe redirects): {config.FRONTEND_URL}")
+    print(f"Public base: {public}")
+    print(f"Widget: http://{config.HOST}:{config.PORT}/widget.js")
+    print(
+        "SPA build: "
+        + ("ready (serving frontend-react/dist)" if frontend_ready else "MISSING — run npm run build")
+    )
     if not config.IS_PRODUCTION:
         print("Demo login: demo@supportflow.local / demo1234")
-    print("Ollama: ollama serve")
+    print("Ollama: ollama serve  (must stay running on this laptop)")
     if not config.STRIPE_SECRET_KEY:
         print("Stripe: not configured (billing endpoints return 503 until .env set)")
     print("=" * 70)
+    print("Laptop share tip: build frontend, set FRONTEND_URL to your tunnel URL,")
+    print("then run a tunnel to this port (see HOSTING_LAPTOP.md).")
+    print("=" * 70)
 
-    app.run(debug=config.DEBUG, host="127.0.0.1", port=5000)
+    app.run(debug=config.DEBUG, host=config.HOST, port=config.PORT)
 

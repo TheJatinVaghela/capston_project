@@ -39,7 +39,7 @@ export default function ChatInput({ onSend, disabled, primaryColor }) {
         fullWidth
         multiline
         maxRows={3}
-        placeholder="Ask about products, shipping, returns..."
+        placeholder="Ask a question about this business…"
         value={text}
         onChange={(e) => setText(e.target.value)}
         onKeyDown={handleKeyDown}

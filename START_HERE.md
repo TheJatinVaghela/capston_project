@@ -56,6 +56,12 @@ A **hybrid 3-tier customer service chatbot** that combines:
 - Key information
 - Quick reference
 
+### 🌐 **I want to share a public link from my laptop**
+→ Read: **`HOSTING_LAPTOP.md`**
+- Build React, run Flask + Ollama on your PC
+- Tunnel with Cloudflare/ngrok
+- Friends sign up / sign in; Stripe stays in test mode
+
 ---
 
 ## 📍 Where Is Everything?
